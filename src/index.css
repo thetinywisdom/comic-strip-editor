@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+@font-face {
+  font-family: 'Comico';
+  src: url('/__l5e/assets-v1/21da09b7-0ebe-4cd9-975d-fa2193f020ed/Comico-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Design system — The Tiny Wisdom brand palette. All colors MUST be HSL. */
+/* Brand colors: #EFEEEA (bg), #ed612b (accent/orange), #2B2C2E (dark) */
+
+@layer base {
+  :root {
+    /* #EFEEEA — warm stone background */
+    --background: 45 10% 93%;
+    --foreground: 220 4% 17%;
+
+    /* Card: slightly lighter than bg */
+    --card: 45 14% 96%;
+    --card-foreground: 220 4% 17%;
+
+    --popover: 45 14% 96%;
+    --popover-foreground: 220 4% 17%;
+
+    /* #2B2C2E as primary */
+    --primary: 220 4% 17%;
+    --primary-foreground: 45 10% 93%;
+
+    /* Muted surface */
+    --secondary: 45 10% 88%;
+    --secondary-foreground: 220 4% 17%;
+
+    --muted: 45 8% 86%;
+    --muted-foreground: 0 0% 42%;
+
+    /* #ed612b — brand orange as accent */
+    --accent: 19 83% 55%;
+    --accent-foreground: 45 10% 93%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 45 10% 93%;
+
+    --border: 45 8% 84%;
+    --input: 45 8% 84%;
+    --ring: 19 83% 55%;
+
+    --radius: 0.5rem;
+
+    /* Custom tokens */
+    --orange: 19 83% 55%;
+    --orange-light: 19 83% 93%;
+    --stone: 45 10% 93%;
+    --stone-deep: 45 8% 86%;
+    --dark: 220 4% 17%;
+
+    /* Shadows */
+    --shadow-card: 0 1px 12px -2px hsl(220 4% 17% / 0.08), 0 1px 3px -1px hsl(220 4% 17% / 0.05);
+    --shadow-float: 0 6px 32px -6px hsl(220 4% 17% / 0.14), 0 2px 8px -3px hsl(220 4% 17% / 0.08);
+
+    --sidebar-background: 45 10% 93%;
+    --sidebar-foreground: 220 4% 17%;
+    --sidebar-primary: 220 4% 17%;
+    --sidebar-primary-foreground: 45 10% 93%;
+    --sidebar-accent: 45 10% 88%;
+    --sidebar-accent-foreground: 220 4% 17%;
+    --sidebar-border: 45 8% 84%;
+    --sidebar-ring: 19 83% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+
+  .font-sans-tw {
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-float {
+    box-shadow: var(--shadow-float);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-slide {
+    background: var(--gradient-slide);
+  }
+}
+
