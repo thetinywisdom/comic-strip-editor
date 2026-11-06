@@ -1,6 +1,6 @@
-// Local (no-account) project store used while the sign-in flow is disabled.
+// Browser project store for the static GitHub Pages build.
 // Mirrors the cloud API in projects.ts and persists to IndexedDB.
-import { loadLocal, saveLocal, clearLocal } from "@/lib/localSave";
+import { clearLocalStrict, loadLocal, saveLocalStrict } from "@/lib/localSave";
 import type { ProjectData, ProjectSummary } from "@/lib/projects";
 
 type LocalProject = ProjectSummary & { data: ProjectData };
@@ -15,7 +15,7 @@ async function readIndex(): Promise<string[]> {
 }
 
 async function writeIndex(ids: string[]) {
-  await saveLocal(ids, INDEX_KEY);
+  await saveLocalStrict(ids, INDEX_KEY);
 }
 
 export async function localList(): Promise<ProjectSummary[]> {
@@ -44,7 +44,7 @@ export async function localCreate(title = "Untitled project"): Promise<string> {
     updated_at: now,
     data: emptyData(),
   };
-  await saveLocal(project, projectKey(id));
+  await saveLocalStrict(project, projectKey(id));
   await writeIndex([id, ...(await readIndex())]);
   return id;
 }
@@ -68,11 +68,11 @@ export async function localSave(
     ...(payload.thumbnail !== undefined ? { thumbnail: payload.thumbnail } : {}),
     updated_at: new Date().toISOString(),
   };
-  await saveLocal(next, projectKey(id));
+  await saveLocalStrict(next, projectKey(id));
 }
 
 export async function localDelete(id: string) {
-  await clearLocal(projectKey(id));
+  await clearLocalStrict(projectKey(id));
   await writeIndex((await readIndex()).filter((x) => x !== id));
 }
 

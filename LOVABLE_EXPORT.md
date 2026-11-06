@@ -22,5 +22,5 @@ The real files were downloaded next to each json (same name without `.asset.json
 ## Things that do NOT move with this code
 - **Supabase (Lovable Cloud) database, auth users, storage, edge functions deployment and secrets** live in Lovable's Supabase project. Export data/schema before cancelling, or create your own Supabase project and run the migrations.
 - **Secrets / env vars** (names only; values are not in this repo except the public publishable keys in `.env`): see list below.
-- **Hosting**: `*.lovable.app` / custom domain hosting stops; redeploy (e.g. Vercel/Netlify/Cloudflare) and repoint DNS.
+- **Hosting**: `*.lovable.app` / custom domain hosting stops; redeploy (e.g. Vercel/Netlify/Cloudflare) and repoint DNS. GitHub Pages for this repo is documented in the README. It does not change this Lovable project or `editor.thetinywisdom.com`.
 - `@lovable.dev/*` npm packages are public on npmjs and keep working; `bun.lock` may reference Lovable's private npm cache — delete it and reinstall if install fails.

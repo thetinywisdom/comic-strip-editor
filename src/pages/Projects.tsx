@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus, Play, Copy, Trash2, ArrowUpRight, ChevronDown, Wrench, Users, LogOut } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import AccessDialog from "@/components/AccessDialog";
+import { staticPublic } from "@/lib/hosting";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +17,7 @@ const TOOLS = [
   { name: "Comic Strip Editor", url: "https://editor.thetinywisdom.com" },
 ];
 import { toast } from "sonner";
-import logotypeAsset from "@/assets/logotype.svg.asset.json";
+import logotypeUrl from "@/assets/logotype.svg";
 import {
   createProject,
   deleteProject,
@@ -43,9 +42,16 @@ const Projects = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.rpc("is_admin").then(({ data, error }) => {
-      setIsAdmin(!error && data === true);
-    });
+    if (staticPublic) return;
+    let cancelled = false;
+    void import("@/integrations/supabase/client").then(({ supabase }) =>
+      supabase.rpc("is_admin").then(({ data, error }) => {
+        if (!cancelled) setIsAdmin(!error && data === true);
+      })
+    );
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
 
@@ -99,7 +105,7 @@ const Projects = () => {
             rel="noreferrer"
             className="flex items-center gap-3 hover:opacity-90 transition"
           >
-            <img src={logotypeAsset.url} alt="The Tiny Wisdom" className="h-7 w-auto" />
+            <img src={logotypeUrl} alt="The Tiny Wisdom" className="h-7 w-auto" />
           </a>
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -124,30 +130,34 @@ const Projects = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAdmin && (
-              <AccessDialog
-                trigger={
-                  <Button variant="ghost" size="sm" className="gap-1.5">
-                    <Users className="h-4 w-4" />
-                    Access
-                  </Button>
-                }
-              />
+            {!staticPublic && isAdmin && <AdminAccessButton />}
+            {!staticPublic && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  void import("@/integrations/supabase/client").then(({ supabase }) =>
+                    supabase.auth.signOut()
+                  );
+                }}
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => supabase.auth.signOut()}
-              aria-label="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
           </div>
 
         </div>
       </header>
 
       <section className="max-w-6xl mx-auto px-6 py-8">
+        {staticPublic && (
+          <p className="mb-6 max-w-2xl text-sm text-muted-foreground">
+            Projects stay in this browser. Sign-in, shared projects, the access list, and
+            sign-in email run on the existing Supabase backend, which this static host does
+            not operate.
+          </p>
+        )}
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
@@ -208,7 +218,7 @@ const Projects = () => {
                     >
                       <Copy className="w-4 h-4" />
                     </Button>
-                    {isAdmin && (
+                    {(staticPublic || isAdmin) && (
                       <Button
                         variant="secondary"
                         size="icon"
@@ -276,5 +286,29 @@ const Projects = () => {
     </main>
   );
 };
+
+function AdminAccessButton() {
+  const [Dialog, setDialog] = useState<ComponentType<{ trigger: ReactNode }> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void import("@/components/AccessDialog").then((mod) => {
+      if (!cancelled) setDialog(() => mod.default);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const trigger = (
+    <Button variant="ghost" size="sm" className="gap-1.5">
+      <Users className="h-4 w-4" />
+      Access
+    </Button>
+  );
+
+  if (!Dialog) return trigger;
+  return <Dialog trigger={trigger} />;
+}
 
 export default Projects;

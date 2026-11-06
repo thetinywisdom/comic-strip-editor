@@ -1,12 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
-
 @font-face {
   font-family: 'Comico';
-  src: url('/__l5e/assets-v1/21da09b7-0ebe-4cd9-975d-fa2193f020ed/Comico-Regular.woff') format('woff');
+  src: url('./assets/Comico-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

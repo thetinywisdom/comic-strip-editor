@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import logotypeAsset from "@/assets/logotype.svg.asset.json";
+import logotypeUrl from "@/assets/logotype.svg";
 
 export const ADMIN_EMAIL = "brian@thetinywisdom.com";
 
@@ -100,7 +100,7 @@ const AuthGate = ({ children }: { children: ReactNode }) => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-6">
         <div className="w-full max-w-xs space-y-4 text-center">
-          <img src={logotypeAsset.url} alt="The Tiny Wisdom" className="h-8 w-auto mx-auto" />
+          <img src={logotypeUrl} alt="The Tiny Wisdom" className="h-8 w-auto mx-auto" />
           <p className="text-sm text-muted-foreground">
             {session.user.email} does not have access to this tool.
           </p>
@@ -125,7 +125,7 @@ const AuthGate = ({ children }: { children: ReactNode }) => {
     <div className="min-h-screen flex items-center justify-center bg-background px-6">
       {step === "email" ? (
         <form onSubmit={sendCode} className="w-full max-w-xs space-y-4 text-center">
-          <img src={logotypeAsset.url} alt="The Tiny Wisdom" className="h-8 w-auto mx-auto" />
+          <img src={logotypeUrl} alt="The Tiny Wisdom" className="h-8 w-auto mx-auto" />
           <p className="text-xs text-muted-foreground">
             Enter your email and we'll send you a sign-in link.
           </p>
@@ -159,7 +159,7 @@ const AuthGate = ({ children }: { children: ReactNode }) => {
         </form>
       ) : (
         <div className="w-full max-w-xs space-y-4 text-center">
-          <img src={logotypeAsset.url} alt="The Tiny Wisdom" className="h-8 w-auto mx-auto" />
+          <img src={logotypeUrl} alt="The Tiny Wisdom" className="h-8 w-auto mx-auto" />
           <p className="text-xs text-muted-foreground">
             Check {email} and click the sign-in link to continue.
           </p>

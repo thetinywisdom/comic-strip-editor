@@ -24,7 +24,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import tinywisdomSvgRaw from "@/assets/watermarks/tinywisdom.svg?raw";
 import iconmarkSvgRaw from "@/assets/watermarks/iconmark.svg?raw";
-import logotypeAsset from "@/assets/logotype.svg.asset.json";
+import logotypeUrl from "@/assets/logotype.svg";
+import { staticPublic } from "@/lib/hosting";
 import { saveLocal } from "@/lib/localSave";
 import { drawShape, type ShapeKind } from "@/lib/drawShape";
 import {
@@ -249,6 +250,7 @@ const Editor = () => {
   const [title, setTitle] = useState("Untitled project");
   const [projectLoading, setProjectLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [images, setImages] = useState<EditorImage[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
@@ -471,6 +473,7 @@ const Editor = () => {
     const t = setTimeout(async () => {
       if (localKey) saveLocal({ images, selectedId, selectedLayerId }, localKey);
       setSaving(true);
+      setSaveError(false);
       try {
         const data = await serializeProject(userId, projectId, {
           images: images as unknown as ProjectData["images"],
@@ -480,6 +483,7 @@ const Editor = () => {
         const thumbnail = await buildThumbnail(images[0]);
         await saveProject(projectId, { data, thumbnail });
       } catch (err) {
+        setSaveError(true);
         toast.error(err instanceof Error ? err.message : "Could not save project");
       } finally {
         setSaving(false);
@@ -1044,7 +1048,7 @@ const Editor = () => {
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")} aria-label="Back to projects">
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <img src={logotypeAsset.url} alt="The Tiny Wisdom" className="h-7 w-auto hidden sm:block" />
+            <img src={logotypeUrl} alt="The Tiny Wisdom" className="h-7 w-auto hidden sm:block" />
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -1059,7 +1063,15 @@ const Editor = () => {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground">
-              {projectLoading ? "Loading…" : saving ? "Saving…" : "Saved"}
+              {projectLoading
+                ? "Loading…"
+                : saving
+                  ? "Saving…"
+                  : saveError
+                    ? "Save failed"
+                    : staticPublic
+                      ? "Saved in this browser"
+                      : "Saved"}
             </span>
             <Button size="sm" onClick={downloadAll} disabled={images.length === 0 || exporting}>
               <Download className="w-4 h-4" /> {exporting ? "Downloading…" : "Download all"}
