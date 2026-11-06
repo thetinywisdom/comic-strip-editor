@@ -35,7 +35,9 @@ Set repository variable `VITE_STATIC_PUBLIC` to `false` only after the Supabase 
 
 ### Turning on Pages
 
-The repository is public so GitHub Free can serve Pages. A private user repository would need GitHub Pro, and this setup does not change the account plan. The publishing source is GitHub Actions (`POST /repos/thetinywisdom/comic-strip-editor/pages` with `build_type=workflow`). The workflow deploys on every push to `main`. No custom domain is configured, and `editor.thetinywisdom.com` stays on Lovable.
+GitHub Free serves Pages for a public repository. A private user repository needs GitHub Pro, and this setup does not change the account plan or add a custom domain. `editor.thetinywisdom.com` stays on Lovable.
+
+Publishing uses GitHub Actions as the source (`build_type=workflow`). The workflow builds on pull requests and deploys on every push to `main`. Switching the repository to public and creating the Pages site both require `administration=write` on the calling token. The Actions workflow token cannot create the Pages site by itself.
 
 # Welcome to your Lovable project
 
