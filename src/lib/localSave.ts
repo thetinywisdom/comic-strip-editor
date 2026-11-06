@@ -16,19 +16,75 @@ function openDb(): Promise<IDBDatabase> {
   });
 }
 
+function putValue<T>(value: T, key: string): Promise<void> {
+  return openDb().then(
+    (db) =>
+      new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE, "readwrite");
+        tx.objectStore(STORE).put(value, key);
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+        tx.onerror = () => {
+          db.close();
+          reject(tx.error ?? new Error("IndexedDB write failed"));
+        };
+        tx.onabort = () => {
+          db.close();
+          reject(tx.error ?? new Error("IndexedDB write aborted"));
+        };
+      })
+  );
+}
+
+function deleteValue(key: string): Promise<void> {
+  return openDb().then(
+    (db) =>
+      new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE, "readwrite");
+        tx.objectStore(STORE).delete(key);
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+        tx.onerror = () => {
+          db.close();
+          reject(tx.error ?? new Error("IndexedDB delete failed"));
+        };
+        tx.onabort = () => {
+          db.close();
+          reject(tx.error ?? new Error("IndexedDB delete aborted"));
+        };
+      })
+  );
+}
+
 export async function saveLocal<T>(value: T, key: string = KEY): Promise<void> {
   try {
-    const db = await openDb();
-    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE, "readwrite");
-      tx.objectStore(STORE).put(value, key);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-    });
-    db.close();
+    await putValue(value, key);
   } catch (err) {
     // Quota errors etc. — fail silently, user can keep working.
     console.warn("saveLocal failed", err);
+  }
+}
+
+/** Project-record writes use this so a full browser quota surfaces in the UI. */
+export async function saveLocalStrict<T>(value: T, key: string): Promise<void> {
+  try {
+    await putValue(value, key);
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : "storage error";
+    throw new Error(`Could not save in this browser (${reason}).`);
+  }
+}
+
+export async function clearLocalStrict(key: string): Promise<void> {
+  try {
+    await deleteValue(key);
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : "storage error";
+    throw new Error(`Could not delete in this browser (${reason}).`);
   }
 }
 
