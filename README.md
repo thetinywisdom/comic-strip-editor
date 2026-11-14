@@ -2,9 +2,9 @@
 
 ## GitHub Pages
 
-The production build is a static site for `https://thetinywisdom.github.io/comic-strip-editor/`.
+The production build is a static site for `https://editor.thetinywisdom.com/`, served from the domain root.
 
-`npm run build` sets Vite's `base` to `/comic-strip-editor/`, bundles the Comico font and logotype from `src/assets` (the Lovable `/__l5e/` URLs are not used), copies `public/` files, and writes `dist/404.html` as a copy of `index.html` so deep links such as `/comic-strip-editor/p/:projectId` load the app. `npm run dev` stays at `/` and still uses the Supabase client when `.env` is present.
+`npm run build` sets Vite's `base` to `/` and the router basename to `/`. It bundles the Comico font and logotype from `src/assets` (the Lovable `/__l5e/` URLs are not used), copies `public/` files including `CNAME`, and writes `dist/404.html` as a copy of `index.html` so deep links such as `/p/:projectId` load the app. `npm run dev` uses the same root paths and still uses the Supabase client when `.env` is present. Production stays in browser-only static mode.
 
 `.github/workflows/pages.yml` installs dependencies in the runner, builds, checks the output, and deploys with GitHub Actions on every push to `main`. Dependencies and server secrets are not committed. Public values the frontend already reads can be overridden with repository **variables** or **secrets** of these names (a secret wins when both are set; an empty value leaves the committed `.env` in place):
 
@@ -15,7 +15,7 @@ The production build is a static site for `https://thetinywisdom.github.io/comic
 
 Do not add `SUPABASE_SERVICE_ROLE_KEY` or `LOVABLE_API_KEY`. Those stay on the Supabase/Lovable server.
 
-This workflow does not change the Lovable project, its Supabase database, or the `editor.thetinywisdom.com` domain.
+This workflow does not change the Lovable project or its Supabase database. `public/CNAME` contains `editor.thetinywisdom.com` so the published files match that hostname. DNS and the Pages custom-domain setting are applied outside this workflow.
 
 ### What the static site does
 
@@ -31,11 +31,11 @@ These pieces are left unwired on Pages. The static UI does not pretend they succ
 - **Email queue.** `process-email-queue` rejects the publishable key (`403 Forbidden`). It needs the service role and `LOVABLE_API_KEY`, and Pages cannot run it.
 - **Lovable OAuth helper.** `src/integrations/lovable` is unused by the screen the app actually shows. It is not connected to this host.
 
-Set repository variable `VITE_STATIC_PUBLIC` to `false` only after the Supabase redirect allow list includes `https://thetinywisdom.github.io/comic-strip-editor/`. That setting is a Lovable/Supabase change and is outside this deployment. Until then the Pages build stays on the browser store.
+Set repository variable `VITE_STATIC_PUBLIC` to `false` only after the Supabase redirect allow list includes `https://editor.thetinywisdom.com`. That setting is a Lovable/Supabase change and is outside this deployment. Until then the Pages build stays on the browser store.
 
 ### Turning on Pages
 
-GitHub Free serves Pages for a public repository. A private user repository needs GitHub Pro, and this setup does not change the account plan or add a custom domain. `editor.thetinywisdom.com` stays on Lovable.
+GitHub Free serves Pages for a public repository. A private user repository needs GitHub Pro, and this setup does not change the account plan. The published site is prepared for `https://editor.thetinywisdom.com/` at `/`.
 
 Publishing uses GitHub Actions as the source (`build_type=workflow`). The workflow builds on pull requests and deploys on every push to `main`. Switching the repository to public and creating the Pages site both require `administration=write` on the calling token. The Actions workflow token cannot create the Pages site by itself.
 

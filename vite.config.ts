@@ -4,9 +4,6 @@ import path from "path";
 import fs from "fs";
 import { componentTagger } from "lovable-tagger";
 
-// Project-site path for https://thetinywisdom.github.io/comic-strip-editor/
-const pagesBase = "/comic-strip-editor/";
-
 /** GitHub Pages serves /404.html for unknown paths and keeps the deep URL. */
 function githubPagesSpaFallback(): Plugin {
   return {
@@ -27,7 +24,7 @@ export default defineConfig(({ mode }) => {
   const staticPublic = (process.env.VITE_STATIC_PUBLIC ?? fileEnv.VITE_STATIC_PUBLIC) === "true";
 
   return {
-    base: mode === "development" ? "/" : pagesBase,
+    base: "/",
     server: {
       host: "::",
       port: 8080,

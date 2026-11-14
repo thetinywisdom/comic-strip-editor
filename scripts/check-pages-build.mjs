@@ -4,7 +4,8 @@ import path from "node:path";
 const dist = path.resolve("dist");
 const indexPath = path.join(dist, "index.html");
 const notFoundPath = path.join(dist, "404.html");
-const base = "/comic-strip-editor/";
+const base = "/";
+const customDomain = "editor.thetinywisdom.com";
 const failures = [];
 
 function fail(message) {
@@ -30,17 +31,25 @@ if (fs.existsSync(indexPath) && fs.existsSync(notFoundPath)) {
   const notFound = fs.readFileSync(notFoundPath, "utf8");
   if (index !== notFound) fail("dist/404.html must be a copy of dist/index.html");
   if (!index.includes(`${base}assets/`)) fail(`index.html is missing ${base}assets/ references`);
+  if (index.includes("/comic-strip-editor/")) fail("index.html still uses the project-site prefix");
   if (index.includes("/src/main.tsx")) fail("index.html still points at the dev module");
-  if (!index.includes(`${base}favicon.ico`) && !index.includes("favicon.ico")) {
-    fail("favicon link was not rewritten for the Pages base path");
+  if (!index.includes(`${base}favicon.ico`)) {
+    fail("favicon link was not rewritten for the domain root");
   }
   const assetRefs = [...index.matchAll(/(?:src|href)="([^"]+)"/g)].map((match) => match[1]);
   for (const ref of assetRefs) {
-    if (!ref.startsWith(base)) fail(`asset URL is missing the Pages base: ${ref}`);
+    if (!ref.startsWith(base) || ref.startsWith("//")) fail(`asset URL is not at the domain root: ${ref}`);
     const relative = ref.slice(base.length).split("?")[0];
     const filePath = path.join(dist, relative);
     if (!fs.existsSync(filePath)) fail(`missing built file for ${ref}`);
   }
+}
+
+const cnamePath = path.join(dist, "CNAME");
+if (!fs.existsSync(cnamePath)) fail("dist/CNAME is missing");
+else {
+  const cname = fs.readFileSync(cnamePath, "utf8").trim();
+  if (cname !== customDomain) fail(`dist/CNAME must be exactly ${customDomain}`);
 }
 
 const files = fs.existsSync(dist) ? walk(dist) : [];
