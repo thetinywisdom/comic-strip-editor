@@ -2,12 +2,11 @@
 export const staticPublic = import.meta.env.VITE_STATIC_PUBLIC === "true";
 
 /**
- * React Router basename for the GitHub Pages project site.
- * Vite's BASE_URL keeps a trailing slash; React Router wants it omitted.
- * Dev (`base: "/"`) uses the default basename.
+ * Router basename for the production site at the domain root.
+ * Vite's BASE_URL is "/" for https://editor.thetinywisdom.com/.
  */
-export function routerBasename(): string | undefined {
+export function routerBasename(): string {
   const base = import.meta.env.BASE_URL || "/";
-  if (base === "/") return undefined;
+  if (base === "/") return "/";
   return base.endsWith("/") ? base.slice(0, -1) : base;
 }
